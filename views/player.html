@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="userName">player</p>
+    <p>Dit zijn jouw taken:</p>
+
+    <div id="taskCodeContainer">
+        <input type="number" id="taskCode" placeholder="0000">
+        <button onclick="checkTask()">check</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var path = window.location.pathname.split('/')
+        var userName = path[path.length-1];
+        var userIndex = 0;
+        if(userName.length == 0) {
+            location.replace("/player")
+        }
+        document.querySelector("#userName").innerHTML=userName;
+
+        var tasks = null;
+        var impostor = false;
+
+        const socket = io.connect(window.location.host);
+        socket.on('connect', (data) => {
+            console.log('Connected to server');
+            socket.emit('requestJoin', userName);
+        });
+        socket.on('returnJoin', (data) => {
+            userIndex = data;
+            console.log("User ID: " + userIndex)
+        });
+        socket.on('returnTask', (data, done) => {
+            console.log(data);
+            var htmlId = "task"+data.index;
+            if(document.querySelector("#"+htmlId) == null) {
+                var e = document.createElement('p');
+                e.innerHTML=data.name;
+                e.setAttribute("id", htmlId);
+                document.body.appendChild(e);
+            }
+            if(done) document.querySelector("#"+htmlId).style.color = "00ff00";
+            else document.querySelector("#"+htmlId).style.color = "ff0000";
+        });
+        socket.on('gameRestart', (data) => {
+            console.log("Game restarted");
+            socket.emit('requestJoin', userName);
+        });
+        socket.on('gameStart', (data) => {
+            console.log("Game started");
+            console.log("Impostor: " + data.impostor);
+            impostor = data.impostor;
+            if(data.impostor) {
+                document.body.style.backgroundColor = "bb0000";
+                document.querySelector("#taskCodeContainer").style.visibility = "hidden";
+            }
+            else  {
+                document.body.style.backgroundColor = "ffffff";
+                
+                document.querySelector("#taskCodeContainer").style.visibility = "visible";
+            }
+            console.log("Tasks: " + data.tasks);
+            tasks = data.tasks;
+            tasks.forEach(element => {
+                socket.emit('getTask', element.taskId);
+            });
+        });
+        var invokeInit = () => {
+            socket.emit('invokeInit', 0);
+        }
+        var invokeStart = (im, ta) => {
+            socket.emit('invokeStart', im, ta);
+        }
+        var checkTask = () => {
+            code = document.querySelector("#taskCode").value;
+            document.querySelector("#taskCode").value = null;
+            socket.emit('checkTask', code);
+        }
+    </script>
+</body>
+</html>
