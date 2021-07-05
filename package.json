@@ -1,0 +1,23 @@
+{
+  "name": "familie-weekend",
+  "version": "1.0.0",
+  "description": "Nieuw project voor Familie Weekend 2021",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NertNiels/FamilieWeekend.git"
+  },
+  "author": "Niels Smit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NertNiels/FamilieWeekend/issues"
+  },
+  "homepage": "https://github.com/NertNiels/FamilieWeekend#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.1.2"
+  }
+}
