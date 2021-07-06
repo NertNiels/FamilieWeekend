@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/reactorstyle.css">
+    <title>REACTOR</title>
+</head>
+<body></body>
+
+    <div id="peacefulDiv"></div>
+    <div id="meltdownDiv">
+        <p id="timer"></p>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let keys = {};
+        var meltdownAudio = new Audio('meltdown.mp3');
+
+        var meltdown = false;
+        var timerId;
+        var timerS = 0;
+        var timerM = 0;
+        var timerElement;
+
+        var backgroundRed = false;
+
+
+        const socket = io.connect(window.location.host);
+        socket.on('connect', (data) => {
+            timerElement = document.getElementById("timer");
+
+            document.addEventListener('keydown', (event) => {
+                keys[event.key] = true;
+            });
+            document.addEventListener('keyup', (event) => {
+                keys[event.key] = false;
+            });
+        })
+        socket.on('reportBody', (data) => {
+            if(meltdown) {
+                meltdown=false;
+                clearTimeout(timerId);
+                document.getElementById("meltdownDiv").style.display = "none";
+                document.getElementById("peacefulDiv").style.display = "inherit";
+            }
+        });
+
+        socket.on('invokeMeltdown', () => {
+            document.getElementById("peacefulDiv").style.display = "none";
+            document.getElementById("meltdownDiv").style.display = "inherit";
+            
+
+            meltdown = true;
+            timerS = 59;
+            timerM = 100;
+            meltdownF();
+        });
+
+        var meltdownF = () => {
+            timerM--
+            if(timerM==-1) {
+                
+                meltdownAudio.play();
+                if(keys['a'] && keys['l']) {
+                    switchPeaceful();
+                    return;
+                }
+
+                timerM=99
+                timerS--;
+
+                backgroundRed = !backgroundRed;
+                if(backgroundRed) {
+                    document.getElementById("meltdownDiv").style.backgroundColor="#ff0000";
+                    timerElement.style.color="#ffffff";
+                } else {
+                    document.getElementById("meltdownDiv").style.backgroundColor="#ffffff";
+                    timerElement.style.color="#ff0000";
+                }
+            }
+            timerElement.innerHTML="00:"+timerS+":"+timerM;
+
+
+            timerId=setTimeout(meltdownF, 10);
+        }
+
+        var switchPeaceful = () => {
+            meltdown=false;
+            clearTimeout(timerId);
+            document.getElementById("meltdownDiv").style.display = "none";
+            document.getElementById("peacefulDiv").style.display = "inherit";
+        }
+
+
+    </script>
+</body>
+</html>

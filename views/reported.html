@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEN LICHAAM GEVONDEN</title>
+</head>
+<body>
+    <p>och jee er is iemand dood nu snel verzamelen</p>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect(window.location.host);
+        socket.on('nextRound', (data) => {
+            var path = window.location.pathname.split('/')
+            location.replace("/player/"+path[2]);
+        });
+    </script>
+</body>
+</html>

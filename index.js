@@ -5,16 +5,21 @@ const io = require('socket.io')(server);
 
 var views = __dirname + '/views';
 
+app.use(express.static('public'));
 app.get('/player/:player', (req, res) => {
     res.sendFile(views+'/player.html');
 });
 
-app.get('/player/:player/:i', (req, res) => {
-    res.redirect('/player');
+app.get('/player/:player/reported', (req, res) => {
+    res.sendFile(views+"/reported.html");
 })
 
 app.get('/player', (req, res) => {
-    res.send("yes");
+    res.sendFile(views+"/players.html");
+});
+
+app.get('/reactor', (req, res) => {
+    res.sendFile(views+"/reactor.html");
 });
 
 
@@ -66,12 +71,12 @@ io.on('connection', (client) => {
     });
 
     client.on('checkTask', (data) => {
-        users[userIndex].tasks.forEach(element => {
-            if(tasks[element.taskId].code == data) {
-                users[userIndex].tasks[element.taskId].done=true;
-                client.emit('returnTask', tasks[element.taskId], element.done);
+        for (let i = 0; i < users[userIndex].tasks.length; i++) {
+            if(tasks[users[userIndex].tasks[i].taskId].code == data) {
+                users[userIndex].tasks[i].done=true;
+                client.emit('returnTask', tasks[users[userIndex].tasks[i].taskId], users[userIndex].tasks[i].done);
             }
-        })
+        };
         
     })
 
@@ -80,6 +85,15 @@ io.on('connection', (client) => {
     });
     client.on('invokeStart', (data1, data2) => {
         startGame(data1, data2);
+    });
+    client.on('reportBody', (data) => {
+        io.emit('reportBody', data);
+    });
+    client.on('requestMeltdown', () => {
+        io.emit('invokeMeltdown');
+    });
+    client.on('invokeNextRound', () => {
+        io.emit('nextRound', 0);
     })
 
     
@@ -107,21 +121,35 @@ var startGame = (impostorNum, taskNum) => {
         users[element].impostor=true;
     })
 
-    for (let i = 0; i < users.length; i++) {
-        users[i].tasks = [
-            {taskId: 0, done: false},
-            {taskId: 1, done: false},
-            {taskId: 2, done: false},
-            {taskId: 3, done: false},
-            {taskId: 4, done: false},
-            {taskId: 5, done: false},
-        ]
-    }
+    randomizeTasks(taskNum)
 
     users.forEach(element => {
         io.to(element.socket).emit('gameStart', element);
     });
     gameStarted = true;
+}
+
+var randomizeTasks = (numTasks) => {
+    var numberOfPlayers = users.length;
+    
+    for (let i = 0; i < numberOfPlayers; i++) {
+        users[i].tasks=[];
+        users[i].tasks.push({taskId: 0, done:false});
+        for (let j = 0; j < numTasks-1; j++) {
+            searching=true;
+            while(searching) {
+                var p = 1+Math.floor(Math.random() * (tasks.length-1))
+                var isUsed = false;
+                users[i].tasks.forEach(element => {
+                    if(p==element.taskId) isUsed=true;
+                });
+                if(!isUsed) {
+                    users[i].tasks.push({taskId: p, done: false});
+                    searching=false;
+                }
+            }
+        }
+    }
 }
 
 server.listen(3000);

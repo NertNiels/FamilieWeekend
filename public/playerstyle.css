@@ -1,0 +1,67 @@
+@import url('/roboto_font/Roboto-Regular.ttf');
+
+body {
+    background-color: #3e3ea1;
+}
+
+#userName {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-size: 2.5em;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 0;
+}
+
+#impostorornot {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    text-align: center;
+    font-size: 1.4em;
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.taskP {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.cred {
+    color: #ff0000;
+}
+
+form {
+    margin: 0 auto;
+}
+form > input {
+    font-size: 1.2em;
+    width:50%;
+}
+#taskCheck {
+    float:right;
+}
+#taskCode {
+    float:left;
+}
+
+#codeContainer {
+    position: fixed;
+    bottom: 0px;
+    width:100%;
+    margin-bottom: 1em;
+    text-align: center;
+}
+#codeContainer > form {
+    margin:0 auto;
+    width:70%;
+}
+#codeContainer > button {
+    width:70%;
+    font-size: 1.2em;
+    margin:0 auto;
+
+}

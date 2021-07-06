@@ -3,16 +3,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="/playerstyle.css">
+    <title>HALLO</title>
 </head>
 <body>
     <p id="userName">player</p>
-    <p>Dit zijn jouw taken:</p>
+    <p id="impostorornot">Dit zijn jouw taken:</p>
 
-    <div id="taskCodeContainer">
-        <input type="number" id="taskCode" placeholder="0000">
-        <button onclick="checkTask()">check</button>
-    </div>
+    <div id="tasks"></div>
+
+    <section id="codeContainer">
+        <form id="taskCodeContainer" action="#" onsubmit="checkTask();return false">
+            <input type="number" id="taskCode" placeholder="0000">
+            <input type="submit" id="taskCheck" value="check">
+        </form>
+        <button onclick="sabotage()" id="sabotageButton">Saboteer</button>
+        <button onclick="reportBody()">Rapporteer lichaam</button>
+    </section>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -43,7 +50,8 @@
                 var e = document.createElement('p');
                 e.innerHTML=data.name;
                 e.setAttribute("id", htmlId);
-                document.body.appendChild(e);
+                e.setAttribute("class", "taskP");
+                document.querySelector("#tasks").appendChild(e);
             }
             if(done) document.querySelector("#"+htmlId).style.color = "00ff00";
             else document.querySelector("#"+htmlId).style.color = "ff0000";
@@ -57,20 +65,29 @@
             console.log("Impostor: " + data.impostor);
             impostor = data.impostor;
             if(data.impostor) {
-                document.body.style.backgroundColor = "bb0000";
-                document.querySelector("#taskCodeContainer").style.visibility = "hidden";
+                document.getElementById("impostorornot").innerHTML = "Jij bent de <span class=\"cred\">saboteur</span>, saboteer en vermoord"
+                document.querySelector("#taskCodeContainer").style.display = "none";
+                document.querySelector("#sabotageButton").style.display = "inherit";
             }
             else  {
-                document.body.style.backgroundColor = "ffffff";
-                
-                document.querySelector("#taskCodeContainer").style.visibility = "visible";
+                document.getElementById("impostorornot").innerHTML = "Jij bent de <span class=\"cred\">onschuldig</span>, dit zijn jouw taken:"
+
+                document.querySelector("#taskCodeContainer").style.display = "inherit";
+                document.querySelector("#sabotageButton").style.display = "none";
             }
+
+
+            document.querySelector("#tasks").innerHTML="";
             console.log("Tasks: " + data.tasks);
             tasks = data.tasks;
             tasks.forEach(element => {
                 socket.emit('getTask', element.taskId);
             });
         });
+        socket.on('reportBody', (data) => {
+            location.replace("/player/"+userName+"/reported");
+        });
+
         var invokeInit = () => {
             socket.emit('invokeInit', 0);
         }
@@ -81,6 +98,13 @@
             code = document.querySelector("#taskCode").value;
             document.querySelector("#taskCode").value = null;
             socket.emit('checkTask', code);
+        }
+        var reportBody = () => {
+            socket.emit('reportBody');
+        }
+
+        var sabotage = () => {
+            socket.emit('requestMeltdown');
         }
     </script>
 </body>
