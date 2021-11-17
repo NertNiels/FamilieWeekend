@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game control center</title>
+</head>
+<body>
+    <h1>Control center</h1>
+    <button onclick="invokeInit()">Initialize new game</button><br>
+    
+    <label for="nimpostor"># Impostors</label><br>
+    <input type="number" name="nimpostor"><br>
+    <label for="ntasks"># Tasks</label><br>
+    <input type="number" name="ntasks"><br>
+    
+    <button onclick="invokeStart()">Start new game</button>
+    <button onclick="nextRound()">Next Round</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect(window.location.host);
+        socket.on('connect', (data) => {
+            console.log('Connected to server');
+        });
+
+        var invokeInit = () => {
+            socket.emit('invokeInit', 0);
+        }
+        var invokeStart = () => {
+            im = document.getElementsByName("nimpostor")[0].value;
+            ta = document.getElementsByName("ntasks")[0].value;
+            socket.emit('invokeStart', im, ta);
+        }
+        var nextRound = () => {
+            socket.emit("invokeNextRound");
+        }
+    </script>
+
+</body>
+</html>

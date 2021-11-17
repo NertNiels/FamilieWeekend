@@ -42,6 +42,7 @@
         socket.on('returnJoin', (data) => {
             userIndex = data;
             console.log("User ID: " + userIndex)
+            document.title = userName;
         });
         socket.on('returnTask', (data, done) => {
             console.log(data);

@@ -22,17 +22,32 @@ app.get('/reactor', (req, res) => {
     res.sendFile(views+"/reactor.html");
 });
 
+app.get('/control', (req, res) => {
+    res.sendFile(views+"/controller.html");
+})
+
+app.get('/idcheck/succes', (req, res) => {
+    res.sendFile(views+"/idchecksucces.html");
+})
+app.get('/idcheck/fail', (req, res) => {
+    res.sendFile(views+"/idcheckfail.html");
+})
+
+app.get('/idcheck', (req, res) => {
+    res.sendFile(views+"/idcheck.html");
+})
+
 
 var users = [];
 var gameStarted = false;
 
 var tasks = [
-    {index: 0, name: "task 1", code: "0000", common: true},
-    {index: 1, name: "task 2", code: "0001", common: false},
-    {index: 2, name: "task 3", code: "0002", common: false},
-    {index: 3, name: "task 4", code: "0003", common: false},
-    {index: 4, name: "task 5", code: "0004", common: false},
-    {index: 5, name: "task 6", code: "0005", common: false},
+    {index: 0, name: "Draden verbinden", code: "0853", common: true},
+    {index: 3, name: "Pasje inchecken", code: "2202", common: true},
+    {index: 1, name: "Dokter Bibber", code: "0087", common: false},
+    {index: 2, name: "Balonnen opblazen", code: "5631", common: false},
+    {index: 4, name: "Balletjes gooien", code: "8757", common: false},
+    {index: 5, name: "Draden", code: "9591", common: false},
 ];
 
 io.on('connection', (client) => {

@@ -1,0 +1,30 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID-Check</title>
+    <link rel="stylesheet" href="/idstyle.css">
+</head>
+<body>
+    <h1>Pasje checken</h1>
+    <p>Vul hier het personeelsnummer in dat op jouw pasje staat</p>
+    <input type="text" name="code"></input>
+    <button onclick="submitCode()">Inloggen</button>
+
+    <script>
+        submitCode = () => {
+            code = document.getElementsByName("code")[0].value;
+            total = 0;
+            [...code].forEach((i) => {
+                total += parseInt(i);
+            })
+            if(total%17 == 0) {
+                document.location = "/idcheck/succes";
+            } else {
+                document.location = "/idcheck/fail";
+            }
+        }
+    </script>
+</body>
+</html>

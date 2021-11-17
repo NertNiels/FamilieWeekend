@@ -10,6 +10,7 @@
 
     <div id="peacefulDiv"></div>
     <div id="meltdownDiv">
+        <p id="infotxt">Je bent nu twee mensen nodig! De ene houdt "A" ingedrukt, de ander "L" op het toetsenbord</p>
         <p id="timer"></p>
     </div>
 
@@ -23,6 +24,7 @@
         var timerS = 0;
         var timerM = 0;
         var timerElement;
+        var infotxt;
 
         var backgroundRed = false;
 
@@ -30,6 +32,7 @@
         const socket = io.connect(window.location.host);
         socket.on('connect', (data) => {
             timerElement = document.getElementById("timer");
+            infotxt = document.getElementById("infotxt");
 
             document.addEventListener('keydown', (event) => {
                 keys[event.key] = true;
@@ -75,12 +78,22 @@
                 if(backgroundRed) {
                     document.getElementById("meltdownDiv").style.backgroundColor="#ff0000";
                     timerElement.style.color="#ffffff";
+                    infotxt.style.color="#ffffff";
+
                 } else {
                     document.getElementById("meltdownDiv").style.backgroundColor="#ffffff";
                     timerElement.style.color="#ff0000";
+                    infotxt.style.color="#ff0000";
+
                 }
             }
-            timerElement.innerHTML="00:"+timerS+":"+timerM;
+            timerSstr=timerS;
+            if(timerS<10) timerSstr="0"+timerS;
+            timerMstr=timerM;
+            if(timerM<10) timerMstr="0"+timerM;
+
+            timerElement.innerHTML="00:"+timerSstr+":"+timerMstr;
+            
 
 
             timerId=setTimeout(meltdownF, 10);
@@ -91,6 +104,13 @@
             clearTimeout(timerId);
             document.getElementById("meltdownDiv").style.display = "none";
             document.getElementById("peacefulDiv").style.display = "inherit";
+        }
+
+        var invokeInit = () => {
+            socket.emit('invokeInit', 0);
+        }
+        var invokeStart = (im, ta) => {
+            socket.emit('invokeStart', im, ta);
         }
 
 
